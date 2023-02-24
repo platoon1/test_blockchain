@@ -7,9 +7,11 @@ class EventStream:
     def __init__(self):
         self.blockchain = Blockchain()
 
-for i in range(10):
-    user = User(i)
-    blockchain._add_user_(user)
+    def add_users(self):
+        for i in range(10):
+            user = User(i)
+            self.blockchain._add_user_(user)
 
-for i in range(8):
-    blockchain.create_transaction()
+    def create_transactions(self):
+        for i in range(8):
+            self.blockchain.create_transaction()
