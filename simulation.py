@@ -1,7 +1,11 @@
 from User import User
 from Blockchain import Blockchain
 
-blockchain = Blockchain()
+
+
+class EventStream:
+    def __init__(self):
+        self.blockchain = Blockchain()
 
 for i in range(10):
     user = User(i)
