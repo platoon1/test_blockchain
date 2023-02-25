@@ -6,29 +6,24 @@ from random import randint, random
 
 class Blockchain(object):
     def __init__(self):
-        self.blocks = {}  # хэши всех транзакций во всех блоках со времени запуска блокчейна
-        self.now_block = [['0x001', '0x002', '0.5432','0b83e4f71f94229141b55324c110eae5']]  # хэши транзакций в нынешнем блоке
-        self.addresses = {} # балансы пользователей
+        self.blocks = {}  # словарь типа номер_блока:list( от кого, кому, сколько, хэш)
         self.prev_block_last_hash = '' # хэш крайней транзакции в предыдущем блоке
 
-        #self.addresses = dict((('0x'+md5(str(time()).encode()).hexdigest() , randint(5, 100)+random()) for i in range(10))) # здесь хранятся адреса и балансы
+        self.addresses = {} # здесь хранятся адреса и балансы
+        for i in range(10):
+            self.addresses['0x'+md5(str(time()-i).encode()).hexdigest()] = randint(5, 100)+random()
+
         self.tokenName = 'FCN'
         self.totalBalance = 100  # сколько выпущено всего валюты
         self.users = []  # объекты пользователи
+        self.now_block = [['0x001', '0x002', '0.5432','0b83e4f71f94229141b55324c110eae5']]  # хэши транзакций в нынешнем блоке
+        # заложена первая транзакция искусственная
+        self.block_size = 5 # сколько транзакций хранится в одном блоке
 
 
-        self.block_size = 5 # transactions
-
-        for i in range(5):
-            addr = '0x'+f'00{i}'
-            value = randint(5, 10) + random()
-            self.addresses[addr] = value
-        print(self.addresses)
-
-
-
-    def create_transaction(self):
-        transaction = input("Введите транзакцию (address_from, address_to, value) : ").split()
+    def create_transaction(self, transaction=[]):
+        if 3>len(transaction):
+            transaction = input("Введите транзакцию (address_from, address_to, value) : ").split()
         if len(transaction) > 3:
             print('Error:: wrong number of arguments')
             return 1
@@ -41,7 +36,7 @@ class Blockchain(object):
         if self.addresses[transaction[0]] < float(transaction[2]):
             print('Error:: not enough balance for executing of transaction')
             return 1
-
+        print(f'Now transaction is from {transaction[0]}, to {transaction[1]} having value {transaction[2]}')
         hash_ = self.make_hash(transaction)
 
         # здесь происходит вызов функции которая осуществялет моделирование
@@ -62,10 +57,6 @@ class Blockchain(object):
                     self.blocks[len(self.blocks) + 1] = self.now_block
                     self.now_block = []
                     self.prev_block_last_hash = hash_
-            print(f'self.blocks: {self.blocks}')
-            print(f'self.now_block:  {self.now_block}')
-
-
 
             print(f'Success:: now balance of {transaction[1]} is {self.addresses[transaction[1]]} {self.tokenName}, transaction hash : {hash_}')
         else:
@@ -87,7 +78,6 @@ class Blockchain(object):
 
     def accept_transaction(self, hash_ ,transaction):
         good = 1
-        print(self.users)
         for user in self.users:
             if len(self.now_block) == 0:
                 decision = user.accept_first_transaction_in_blocK(hash_, transaction,  self.prev_block_last_hash)
@@ -102,7 +92,9 @@ class Blockchain(object):
 
     def _add_user_(self, user):
         if isinstance(user, User):
+            user.id = len(self.users)+1
             self.users.append(user)
+            self.addresses[md5(str(user.id+time()).encode()).hexdigest()] = 5
         else:
             raise ValueError
 
