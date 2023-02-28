@@ -24,7 +24,8 @@ class EventStream:
 
     def main(self):
         work = 1
-        while work:
+        while work<10:
+            work+=1
             sleep(1)
             if choice([0,1]):
                 new_user = User(0)
@@ -33,6 +34,8 @@ class EventStream:
                 addr_from, addr_to = sample(self.blockchain.addresses.keys(), 2)
                 value = randint(0, 100)
                 self.blockchain.create_transaction([addr_from, addr_to, str(value)])
+        self.blockchain.check_integrity()
+
 
 if __name__=='__main__':
     stream  = EventStream()

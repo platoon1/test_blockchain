@@ -98,3 +98,17 @@ class Blockchain(object):
         else:
             raise ValueError
 
+    def check_integrity(self):
+        now = ''
+        for block_number in self.blocks:
+            block = self.blocks[block_number]
+            for data in block:
+                now = now + ''.join(data[:3])
+                now = md5(now.encode()).hexdigest()
+        for data in self.now_block:
+            now = now + ''.join(data[:3])
+            now = md5(now.encode()).hexdigest()
+        if now == self.now_block[-1][-1]:
+            print('Integrity confirmed.')
+        else:
+            print('Integrity ruined.')
